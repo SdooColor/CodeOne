@@ -6,10 +6,8 @@ public class Main: MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        GameObject brick = Resources.Load("Prefab/brick") as GameObject;
-        brick.transform.position = new Vector3(0, -2, 0);
-        brick.transform.Translate(0, 2, 0);
-        Instantiate(brick);
+        Globals.map = new Map();
+        Globals.terrainSpawner = new TerrainSpawner(transform.root);
     }
 	
 	// Update is called once per frame

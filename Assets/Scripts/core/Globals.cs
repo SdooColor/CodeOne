@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Scripts.core {
     class Globals {
-        public static Map map = new Map();
-        public static TerrainSpawner terrainSpawner = new TerrainSpawner();
+        public static Map map;
+        public static TerrainSpawner terrainSpawner;
     }
 }
