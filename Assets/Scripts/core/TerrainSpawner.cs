@@ -20,13 +20,16 @@ namespace Assets.Scripts.core {
         /*
         * 根据数据生成对应的地形 GameObject
         */
-        public GameObject[] spawn(Vector3[] tileData) {
+        public GameObject[] spawn(Vector3?[] tileData) {
             GameObject[] list = new GameObject[tileData.Length];
 
             for (int index = 0; index < tileData.Length; index++) {
-                GameObject tile = GameObject.Instantiate(brick, stage, false) as GameObject;
-                tile.transform.localScale = new Vector3(1f, tileData[index].y, 1f);
-                tile.transform.InverseTransformPoint(tileData[index].x, tileData[index].y * 0.5f, tileData[index].z);
+                Vector3? pos = tileData[index];
+                if (pos.HasValue) {
+                    GameObject tile = GameObject.Instantiate(brick, stage, false) as GameObject;
+                    tile.transform.localScale = new Vector3(1f, pos.Value.y, 1f);
+                    tile.transform.position = new Vector3(tileData[index].Value.x, tileData[index].Value.y * 0.5f, tileData[index].Value.z);
+                }
             }
             return list;
         }

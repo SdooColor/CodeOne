@@ -7,18 +7,16 @@ using UnityEngine;
 namespace Assets.Scripts.core {
     class Map {
         // 视窗
-        readonly Rect viewport = new Rect(0,0, 10f,10f);
+        public Rect viewport = new Rect(0,0, 25f,25f);
 
         // 渲染区域
-        readonly Rect renderRect = new Rect();
-        // 上一次的渲染范围
-        readonly Rect lastRenderRect = new Rect();
+        Rect renderRect = new Rect();
 
         // 当前的地图内容
-        readonly Dictionary<string, GameObject[]> canvas = new Dictionary<string, GameObject[]>();
-        readonly Dictionary<string, Boolean> canvasRenderFlag = new Dictionary<string, bool>();
+        Dictionary<string, GameObject[]> canvas = new Dictionary<string, GameObject[]>();
+        Dictionary<string, Boolean> canvasRenderFlag = new Dictionary<string, bool>();
 
-        readonly Vector2 helpPoint = new Vector2();
+        Vector2 helpPoint = new Vector2();
 
         MAP_DATA data;
 
@@ -26,20 +24,21 @@ namespace Assets.Scripts.core {
         }
 
         public void load() {
+            data = new MAP_DATA();
+            data.tiles = new Dictionary<string, Vector3?[]>();
         }
 
         public void save() {
         }
 
-        void render() {
+        public void render() {
             // 获取渲染区域
             // 坐标要进行转换，获取 tile 的坐标
-            renderRect.Set(
-                Mathf.Floor(viewport.x / MAP_DATA.TILE_WIDTH),
-                Mathf.Floor(viewport.y / MAP_DATA.TILE_HEIGHT),
-                Mathf.Ceil(viewport.xMax / MAP_DATA.TILE_WIDTH),
-                Mathf.Ceil(viewport.yMax / MAP_DATA.TILE_HEIGHT)
-                );
+            renderRect.x = Mathf.Floor(viewport.x / MAP_DATA.TILE_WIDTH);
+            renderRect.y = Mathf.Floor(viewport.y / MAP_DATA.TILE_HEIGHT);
+            renderRect.width = Mathf.Ceil(viewport.xMax / MAP_DATA.TILE_WIDTH) - renderRect.x;
+            renderRect.height = Mathf.Ceil(viewport.yMax / MAP_DATA.TILE_HEIGHT) - renderRect.y;
+            Debug.Log("renderRect:" + renderRect);
 
             for (float x = renderRect.x; x < renderRect.xMax; x++) {
                 for (float y = renderRect.y; y < renderRect.yMax; y++) {
@@ -56,7 +55,7 @@ namespace Assets.Scripts.core {
 
             foreach (string key in canvas.Keys) {
                 string[] keys = key.Split('_');
-                helpPoint.Set(System.Convert.ToSingle(keys[0]), System.Convert.ToSingle(keys[1]));
+                helpPoint.Set(Convert.ToSingle(keys[0]), Convert.ToSingle(keys[1]));
 
                 if (renderRect.Contains(helpPoint)) {
                     if (canvas[key] == null) {
@@ -74,11 +73,13 @@ namespace Assets.Scripts.core {
             }
         }
 
-        void renderTiles(string key, Vector3 [] data) {
-            canvas.Add(key, Globals.terrainSpawner.spawn(data));
+        void renderTiles(string key, Vector3? [] data) {
+            Debug.Log("renderTiles:" + key);
+            canvas[key] = Globals.terrainSpawner.spawn(data);
         }
 
         void removeTiles(GameObject [] bricks) {
+            Debug.Log("removeTiles");
             foreach (GameObject brick in bricks) {
                 GameObject.DestroyObject(brick);
             }
@@ -89,17 +90,24 @@ namespace Assets.Scripts.core {
         public const float TILE_WIDTH = 10f;
         public const float TILE_HEIGHT = 10f;
 
-        public Dictionary<string, Vector3 []> tiles;
+        public Dictionary<string, Vector3? []> tiles;
 
-        public static Vector3[] randomSpawn(float x, float y) {
-            Vector3[] tiles = new Vector3[(int)(TILE_WIDTH * TILE_HEIGHT)];
+        public static Vector3?[] randomSpawn(float x, float y) {
+            Vector3?[] tiles = new Vector3?[(int)(TILE_WIDTH * TILE_HEIGHT)];
 
             int index = 0;
-            for (; x < x + TILE_WIDTH; x++) {
-                for (; y < y + TILE_HEIGHT; y++) {
-                    Boolean hasBrick = UnityEngine.Random.Range(0, 1) > 0.8;
-                    float height = Mathf.Floor(UnityEngine.Random.Range(1, 4));
-                    tiles[index] = new Vector3(y, height, x);
+            float xMax = x + TILE_WIDTH;
+            float yMax = y + TILE_HEIGHT;
+
+            for (; x < xMax; x++) {
+                for (; y < yMax; y++) {
+                    Boolean hasBrick = UnityEngine.Random.Range(0f, 1f) > 0.8f;
+                    if (hasBrick) {
+                        float height = Mathf.Floor(UnityEngine.Random.Range(1, 4));
+                        tiles[index] = new Vector3(y, height, x);
+                    }
+
+                    index++;
                 }
             }
             return tiles;
