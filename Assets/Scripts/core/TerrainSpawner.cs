@@ -8,12 +8,15 @@ using System.Collections;
 namespace Assets.Scripts.core {
     class TerrainSpawner {
         const string BRICK_PATH = "Prefab/brick";
+        const string FLOOR_PATH = "Prefab/floor";
 
         GameObject brick;
+        GameObject floor;
         Transform stage;
 
         public TerrainSpawner(Transform stage) {
             brick = Resources.Load(BRICK_PATH) as GameObject;
+            floor = Resources.Load(FLOOR_PATH) as GameObject;
             this.stage = stage;
         }
 
@@ -26,11 +29,13 @@ namespace Assets.Scripts.core {
             for (int index = 0; index < tileData.Length; index++) {
                 Vector3? pos = tileData[index];
                 if (pos.HasValue) {
-                    GameObject tile = GameObject.Instantiate(brick, stage, false) as GameObject;
+                    GameObject tile = GameObject.Instantiate(pos.Value.y == 1f ? floor : brick, stage, false) as GameObject;
                     tile.transform.localScale = new Vector3(1f, pos.Value.y, 1f);
                     tile.transform.position = new Vector3(tileData[index].Value.x, tileData[index].Value.y * 0.5f, tileData[index].Value.z);
+                    list[index] = tile;
                 }
             }
+
             return list;
         }
     }

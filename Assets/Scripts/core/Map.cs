@@ -53,6 +53,7 @@ namespace Assets.Scripts.core {
                 }
             }
 
+
             foreach (string key in canvas.Keys) {
                 string[] keys = key.Split('_');
                 helpPoint.Set(Convert.ToSingle(keys[0]), Convert.ToSingle(keys[1]));
@@ -96,15 +97,20 @@ namespace Assets.Scripts.core {
             Vector3?[] tiles = new Vector3?[(int)(TILE_WIDTH * TILE_HEIGHT)];
 
             int index = 0;
-            float xMax = x + TILE_WIDTH;
-            float yMax = y + TILE_HEIGHT;
+            float xStart = x * TILE_WIDTH;
+            float yStart = y * TILE_HEIGHT;
+            float xMax = xStart + TILE_WIDTH;
+            float yMax = yStart + TILE_HEIGHT;
 
-            for (; x < xMax; x++) {
-                for (; y < yMax; y++) {
-                    Boolean hasBrick = UnityEngine.Random.Range(0f, 1f) > 0.8f;
-                    if (hasBrick) {
+            for (x = xStart; x < xMax; x++) {
+                for (y = yStart; y < yMax; y++) {
+                    Boolean hasbrick = UnityEngine.Random.Range(0f, 1f) > 0.8f;
+                    if (hasbrick) {
                         float height = Mathf.Floor(UnityEngine.Random.Range(1, 4));
-                        tiles[index] = new Vector3(y, height, x);
+                        tiles[index] = new Vector3(x, height, y);
+                    }
+                    else {
+                        tiles[index] = new Vector3(x, 1, y);
                     }
 
                     index++;

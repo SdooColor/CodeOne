@@ -16,8 +16,8 @@ public class Main: MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Globals.map.viewport.x = mainCamera.transform.position.z - Globals.map.viewport.width * 0.5f;
-        Globals.map.viewport.y = mainCamera.transform.position.x - 10f - Globals.map.viewport.height;
+        Globals.map.viewport.x = mainCamera.transform.position.x - Globals.map.viewport.width * 0.5f;
+        Globals.map.viewport.y = mainCamera.transform.position.z - Globals.map.viewport.height * 0.5f;
 
         Globals.map.render();
 	}
