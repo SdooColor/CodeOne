@@ -6,35 +6,27 @@ using UnityEngine;
 
 namespace Assets.Scripts.core.pad {
     class RunCMD : BasicPadCommond {
-        [SerializeField]
-        float speed = 2.0f;
-        [SerializeField]
-        float rotationSpeed = 2.0f;
 
         public RunCMD() : base() {
+            states = "idle|run";
+            handleOnce = false;
         }
 
-        protected override void Start() {
-            base.Start();
-            speed = 2.0f;
-        }
+        public override void updatePlayer(Charactor charactor) {
+            charactor.animator.SetBool("move", true);
 
-        public override void exec(GameObject player) {
-            Animator controllor = player.GetComponent<Animator>();
-            Transform transform = player.transform;
+            float zV = Input.GetAxis("Vertical");
+            float xV = Input.GetAxis("Horizontal");
 
-            controllor.SetBool("move", true);
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(xV, 0, zV), charactor.gameObject.transform.up);
+            Vector3 v = rotation * charactor.forward;
+            Debug.Log(v);
 
-            float translation = Input.GetAxis("Vertical") * speed;
-            float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
+            charactor.gameObject.transform.LookAt(rotation * charactor.forward);
 
-            controllor.SetFloat("direction", rotation);
+            float translation = charactor.runSpeed * Time.deltaTime;
 
-            translation *= Time.deltaTime;
-            rotation *= Time.deltaTime;
-
-            transform.Translate(0, 0, translation);
-            transform.Rotate(0, rotation, 0);
+            transform.Translate(0,0, translation);
         }
 
     }

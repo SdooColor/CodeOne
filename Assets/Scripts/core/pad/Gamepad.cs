@@ -5,27 +5,24 @@ using UnityEditor;
 using Assets.Scripts.core.pad;
 
 public class Gamepad : MonoBehaviour {
-    [SerializeField]
-    public GameObject config;
-
-    Animator animator;
+    BasicPadCommond[] cmds;
+    Charactor charactor;
 
 	// Use this for initialization
 	void Start () {
-        animator = GetComponent<Animator>();
+        cmds = GetComponents<BasicPadCommond>();
+        charactor = GetComponent<Charactor>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (config == null) {
-            return;
-        }
+        int state = charactor.getState(0);
 
-        int state = animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
-
-        foreach (BasicPadCommond cmd in config.GetComponents<BasicPadCommond>()) {
-            if (Input.GetButtonDown(cmd.key) && cmd.checkActivable(state)) {
-                cmd.exec(gameObject);
+        foreach (BasicPadCommond cmd in cmds) {
+            if (cmd.handleOnce ? Input.GetKeyDown(cmd.key) : Input.GetKey(cmd.key)) {
+                if (cmd.checkActivable(state)) {
+                    cmd.updatePlayer(charactor);
+                }
             }
         }
     }

@@ -7,11 +7,11 @@ using UnityEngine;
 namespace Assets.Scripts.core.pad {
     class JumpCMD : BasicPadCommond {
         public JumpCMD() : base() {
+            states = "idle|run|jump";
         }
 
-        public override void exec(GameObject player) {
-            Animator controllor = player.GetComponent<Animator>();
-            controllor.SetTrigger("jump");
+        public override void updatePlayer(Charactor charactor) {
+            charactor.animator.SetTrigger("jump");
         }
     }
 }

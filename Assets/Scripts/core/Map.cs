@@ -38,7 +38,6 @@ namespace Assets.Scripts.core {
             renderRect.y = Mathf.Floor(viewport.y / MAP_DATA.TILE_HEIGHT);
             renderRect.width = Mathf.Ceil(viewport.xMax / MAP_DATA.TILE_WIDTH) - renderRect.x;
             renderRect.height = Mathf.Ceil(viewport.yMax / MAP_DATA.TILE_HEIGHT) - renderRect.y;
-            Debug.Log("renderRect:" + renderRect);
 
             for (float x = renderRect.x; x < renderRect.xMax; x++) {
                 for (float y = renderRect.y; y < renderRect.yMax; y++) {
@@ -75,12 +74,10 @@ namespace Assets.Scripts.core {
         }
 
         void renderTiles(string key, Vector3? [] data) {
-            Debug.Log("renderTiles:" + key);
             canvas[key] = Globals.terrainSpawner.spawn(data);
         }
 
         void removeTiles(GameObject [] bricks) {
-            Debug.Log("removeTiles");
             foreach (GameObject brick in bricks) {
                 GameObject.DestroyObject(brick);
             }
