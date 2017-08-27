@@ -9,7 +9,7 @@ public class Charactor : MonoBehaviour {
 
     public Animator animator;
 
-    GameObject mode;
+    public GameObject mode;
 
 	// Use this for initialization
 	void Start () {

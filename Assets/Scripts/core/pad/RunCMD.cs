@@ -18,11 +18,9 @@ namespace Assets.Scripts.core.pad {
             float zV = Input.GetAxis("Vertical");
             float xV = Input.GetAxis("Horizontal");
 
-            Quaternion rotation = Quaternion.LookRotation(new Vector3(xV, 0, zV), charactor.gameObject.transform.up);
-            Vector3 v = rotation * charactor.forward;
-            Debug.Log(v);
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(xV, 0, zV), charactor.mode.transform.up);
 
-            charactor.gameObject.transform.LookAt(rotation * charactor.forward);
+            charactor.gameObject.transform.LookAt(rotation * charactor.forward + charactor.mode.transform.position);
 
             float translation = charactor.runSpeed * Time.deltaTime;
 
