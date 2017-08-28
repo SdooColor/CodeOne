@@ -15,14 +15,19 @@ public class Charactor : MonoBehaviour {
 	void Start () {
         animator = GetComponent<Animator>();
         mode = gameObject;
-        forward = gameObject.transform.forward;
-        up = gameObject.transform.forward;
+        forward = transform.forward;
+        up = transform.forward;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
 	}
+
+    public void updateForward(Vector3 forward) {
+        transform.rotation = Quaternion.LookRotation(forward);
+        this.forward.Set(forward.x, forward.y, forward.z);
+        Debug.Log("updateForward:" + forward);
+    }
 
     public int getState(int layer) {
         return animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
