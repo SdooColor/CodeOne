@@ -30,6 +30,6 @@ public class BasicPadCommond : MonoBehaviour {
         return Array.IndexOf(stateList, state) != -1;
     }
 
-    public virtual void updatePlayer(Charactor charactor) {
+    public virtual void updatePlayer(Character charactor) {
     }
 }

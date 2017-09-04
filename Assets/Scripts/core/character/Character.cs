@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Charactor : MonoBehaviour {
+public class Character : MonoBehaviour {
     // current mode's forward
     public Vector3 forward;
     public Vector3 up;
@@ -24,7 +24,7 @@ public class Charactor : MonoBehaviour {
         basicMoveFoo();
     }
 
-    // it's a basic move controll
+    // it's a basic move controller
     // 能被更高优先级的动作控制其执行开关
     void basicMoveFoo() {
         float zV = Input.GetAxis("Vertical");

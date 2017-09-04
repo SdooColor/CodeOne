@@ -14,13 +14,13 @@ public class MainCameraController : MonoBehaviour {
     [SerializeField]
     float yRotation = 0f;
 
-    Charactor charactor;
+    Character charactor;
 
     Quaternion cameraQ;
 
     // Use this for initialization
     void Start() {
-        charactor = target.GetComponent<Charactor>();
+        charactor = target.GetComponent<Character>();
         updateCamera();
     }
 

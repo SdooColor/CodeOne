@@ -10,7 +10,7 @@ namespace Assets.Scripts.core.pad {
             states = "idle|run|jump";
         }
 
-        public override void updatePlayer(Charactor charactor) {
+        public override void updatePlayer(Character charactor) {
             charactor.animator.SetTrigger("jump");
         }
     }

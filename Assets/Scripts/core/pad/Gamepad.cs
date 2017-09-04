@@ -6,12 +6,12 @@ using Assets.Scripts.core.pad;
 
 public class Gamepad : MonoBehaviour {
     BasicPadCommond[] cmds;
-    Charactor charactor;
+    Character charactor;
 
 	// Use this for initialization
 	void Start () {
         cmds = GetComponents<BasicPadCommond>();
-        charactor = GetComponent<Charactor>();
+        charactor = GetComponent<Character>();
 	}
 	
 	// Update is called once per frame
