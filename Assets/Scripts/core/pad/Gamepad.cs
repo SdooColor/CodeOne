@@ -1,28 +1,24 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEditor.Animations;
-using UnityEditor;
-using Assets.Scripts.core.pad;
+using System;
+using System.Collections.Generic;
 
 public class Gamepad : MonoBehaviour {
-    BasicPadCommond[] cmds;
-    Character charactor;
+    BasicPadCommond[] totalCMDs;
+    Character character;
 
-	// Use this for initialization
-	void Start () {
-        cmds = GetComponents<BasicPadCommond>();
-        charactor = GetComponent<Character>();
+    // Use this for initialization
+    void Start () {
+        totalCMDs = GetComponents<BasicPadCommond>();
+        character = GetComponent<Character>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        int state = charactor.getState(0);
+        int state = character.getState(0);
 
-        foreach (BasicPadCommond cmd in cmds) {
-            if (cmd.handleOnce ? Input.GetKeyDown(cmd.key) : Input.GetKey(cmd.key)) {
-                if (cmd.checkActivable(state)) {
-                    cmd.updatePlayer(charactor);
-                }
+        foreach (BasicPadCommond cmd in totalCMDs) {
+            if (Input.GetKeyDown(cmd.key) && cmd.checkActivable(state)) {
+                cmd.startCMD(character);
             }
         }
     }

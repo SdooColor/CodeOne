@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public class BasicPadCommond : MonoBehaviour {
@@ -10,10 +7,10 @@ public class BasicPadCommond : MonoBehaviour {
 
     [NonSerialized]
     public string states;
-    [NonSerialized]
-    public bool handleOnce = true;
 
     protected int[] stateList;
+    protected bool actived = false;
+    protected Character player;
 
     public BasicPadCommond() {
     }
@@ -30,6 +27,32 @@ public class BasicPadCommond : MonoBehaviour {
         return Array.IndexOf(stateList, state) != -1;
     }
 
-    public virtual void updatePlayer(Character charactor) {
+    public void startCMD(Character character) {
+        actived = true;
+        player = character;
+        entry();
+    }
+
+    void Update() {
+        if (actived) {
+            updatePlayer();
+        }
+    }
+
+    public void endCMD() {
+        actived = false;
+        player = null;
+    }
+
+    public virtual void entry() {
+        // cmd entry
+    }
+
+    public virtual void updatePlayer() {
+        // update after enter the cmd
+    }
+
+    public virtual void exit() {
+        // exit the cmd
     }
 }

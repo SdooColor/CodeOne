@@ -14,13 +14,11 @@ public class MainCameraController : MonoBehaviour {
     [SerializeField]
     float yRotation = 0f;
 
-    Character charactor;
-
-    Quaternion cameraQ;
+    Character character;
 
     // Use this for initialization
     void Start() {
-        charactor = target.GetComponent<Character>();
+        character = target.GetComponent<Character>();
         updateCamera();
     }
 
@@ -36,16 +34,12 @@ public class MainCameraController : MonoBehaviour {
         }
         else if (Input.GetKey(KeyCode.Mouse1)) {
             xRotation += Time.deltaTime * sensitivity * -Input.GetAxis("Mouse Y");
+            yRotation = 0;
 
             // change charactor forward , only for yRotation
             float deltaYRotation = Time.deltaTime * sensitivity * Input.GetAxis("Mouse X");
-            // plus at current camear roation's y
-            float forwardYRoation = transform.rotation.eulerAngles.y + deltaYRotation;
-            // reset yRotation
-            yRotation = 0;
-
             // update forward
-            charactor.updateForward(Quaternion.Euler(0, forwardYRoation, 0 )* Vector3.forward);
+            character.updateForward(Quaternion.AngleAxis(deltaYRotation, Vector3.up) * character.forward);
         }
 
         updateCamera();
@@ -53,7 +47,7 @@ public class MainCameraController : MonoBehaviour {
 
     void updateCamera() {
         // frist rotate camera forward charactor's forward, then rotate to the x,yRotation
-        transform.rotation = Quaternion.LookRotation(charactor.forward,Vector3.up) * Quaternion.Euler(xRotation, yRotation, 0);
-        transform.position = transform.rotation * (-Vector3.forward * distance) + charactor.transform.position;
+        transform.rotation = Quaternion.LookRotation(character.forward,Vector3.up) * Quaternion.Euler(xRotation, yRotation, 0);
+        transform.position = transform.rotation * (-Vector3.forward * distance) + character.transform.position;
     }
 }
