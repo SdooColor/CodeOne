@@ -56,15 +56,20 @@ public class Character : MonoBehaviour {
 
         if (xV != 0 || zV != 0) {
             animator.SetBool("move", true);
-            // 当前速度基于 forward 方向的旋转量
-            Quaternion speedRotation = Quaternion.LookRotation(new Vector3(xV, 0, zV), transform.up);
-            float speedY = speed.y;
-            speed = speedRotation * forward * velocity;
-            speed.Set(speed.x , speedY, speed.z);
+            if (isGrounded) {
+                // 当前速度基于 forward 方向的旋转量
+                Quaternion speedRotation = Quaternion.LookRotation(new Vector3(xV, 0, zV), transform.up);
+                float speedY = speed.y;
+                speed = speedRotation * forward * velocity;
+                speed.Set(speed.x , speedY, speed.z);
+            }
         }
         else {
             animator.SetBool("move", false);
-            speed.Set(0, speed.y, 0);
+            // 在地面时才重置水平方向的速度
+            if (isGrounded) {
+                speed.Set(0, speed.y, 0);
+            }
         }
     }
 
