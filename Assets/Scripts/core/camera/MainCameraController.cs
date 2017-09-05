@@ -9,9 +9,7 @@ public class MainCameraController : MonoBehaviour {
     [SerializeField]
     public float sensitivity = 200f;
 
-    [SerializeField]
     float xRotation = 25f;
-    [SerializeField]
     float yRotation = 0f;
 
     Character character;
@@ -30,16 +28,16 @@ public class MainCameraController : MonoBehaviour {
 
             // clamp in rang
             xRotation = Mathf.Clamp(xRotation, 0, 70);
-            yRotation = Mathf.Clamp(yRotation, -70, 70);
+            yRotation = Mathf.Clamp(yRotation, -90, 90);
         }
         else if (Input.GetKey(KeyCode.Mouse1)) {
             xRotation += Time.deltaTime * sensitivity * -Input.GetAxis("Mouse Y");
-            yRotation = 0;
-
             // change charactor forward , only for yRotation
             float deltaYRotation = Time.deltaTime * sensitivity * Input.GetAxis("Mouse X");
             // update forward
-            character.updateForward(Quaternion.AngleAxis(deltaYRotation, Vector3.up) * character.forward);
+            character.updateForward(Quaternion.AngleAxis(deltaYRotation + yRotation, Vector3.up) * character.forward);
+            // reset
+            yRotation = 0f;
         }
 
         updateCamera();
