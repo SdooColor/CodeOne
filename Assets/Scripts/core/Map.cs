@@ -6,114 +6,111 @@ using UnityEngine;
 
 namespace Assets.Scripts.core {
     class Map {
-        // 视窗
-        public Rect viewport = new Rect(0,0, 25f,25f);
-
-        // 渲染区域
-        Rect renderRect = new Rect();
-
-        // 当前的地图内容
-        Dictionary<string, GameObject[]> canvas = new Dictionary<string, GameObject[]>();
-        Dictionary<string, Boolean> canvasRenderFlag = new Dictionary<string, bool>();
-
-        Vector2 helpPoint = new Vector2();
 
         MAP_DATA data;
+
+        Rect viewport;
+        // 当前的地图内容
+        GameObject[,] canvas;
+
+        bool forceRender;
 
         public Map() {
         }
 
         public void load() {
             data = new MAP_DATA();
-            data.tiles = new Dictionary<string, Vector3?[]>();
+            data.tiles = new Dictionary<string, Vector3?[,]>();
+            viewport = new Rect(0, 0, MAP_DATA.WIDTH, MAP_DATA.HEIGHT);
+            canvas = new GameObject[MAP_DATA.WIDTH * 3, MAP_DATA.HEIGHT * 3];
+
+            // 第一次渲染需要强制执行
+            forceRender = true;
         }
 
         public void save() {
         }
 
-        public void render() {
-            // 获取渲染区域
-            // 坐标要进行转换，获取 tile 的坐标
-            renderRect.x = Mathf.Floor(viewport.x / MAP_DATA.TILE_WIDTH);
-            renderRect.y = Mathf.Floor(viewport.y / MAP_DATA.TILE_HEIGHT);
-            renderRect.width = Mathf.Ceil(viewport.xMax / MAP_DATA.TILE_WIDTH) - renderRect.x;
-            renderRect.height = Mathf.Ceil(viewport.yMax / MAP_DATA.TILE_HEIGHT) - renderRect.y;
+        public void followTarget(Transform target) {
+            int indexX = (int)Mathf.Floor(target.position.x / MAP_DATA.WIDTH);
+            int indexY = (int)Mathf.Floor(target.position.z / MAP_DATA.HEIGHT);
 
-            for (float x = renderRect.x; x < renderRect.xMax; x++) {
-                for (float y = renderRect.y; y < renderRect.yMax; y++) {
+            if (forceRender) {
+                viewport.x = indexX;
+                viewport.y = indexY;
+                render();
+                forceRender = false;
+            }
+            else if (viewport.x != indexX * MAP_DATA.WIDTH || viewport.y != indexY * MAP_DATA.HEIGHT) {
+                viewport.x = indexX * MAP_DATA.WIDTH;
+                viewport.y = indexY * MAP_DATA.HEIGHT;
+
+                render();
+            }
+        }
+
+        void render() {
+            int indexX = (int)viewport.x / MAP_DATA.WIDTH;
+            int indexY = (int)viewport.y / MAP_DATA.HEIGHT;
+            int canvasIndexX, canvasIndexY;
+            int canvasC, canvasR;
+
+            for (int x = indexX - 1; x <= indexX + 1; x++) {
+                for (int y = indexY - 1; y <= indexY + 1; y++) {
                     string key = x + "_" + y;
+
+                    // 数据还未生成
                     if (!data.tiles.ContainsKey(key)) {
                         data.tiles.Add(key, MAP_DATA.randomSpawn(x, y));
                     }
 
-                    if (!canvas.ContainsKey(key)) {
-                        canvas.Add(key, null);
-                    }
-                }
-            }
+                    // 根据地形数据生成 gameObject
+                    GameObject[,] gameobjects = Globals.terrainSpawner.spawn(data.tiles[key]);
 
+                    canvasIndexX = x - indexX + 1;
+                    canvasIndexY = y - indexY + 1;
 
-            foreach (string key in canvas.Keys) {
-                string[] keys = key.Split('_');
-                helpPoint.Set(Convert.ToSingle(keys[0]), Convert.ToSingle(keys[1]));
+                    for (int c = 0; c < MAP_DATA.WIDTH; c++) {
+                        for (int r = 0; r < MAP_DATA.HEIGHT; r++) {
+                            canvasC = c + canvasIndexX * MAP_DATA.WIDTH;
+                            canvasR = r + canvasIndexY * MAP_DATA.HEIGHT;
+                            if (canvas[canvasC, canvasR]) {
+                                GameObject.Destroy(canvas[canvasC, canvasR]);
+                            }
 
-                if (renderRect.Contains(helpPoint)) {
-                    if (canvas[key] == null) {
-                        renderTiles(key, data.tiles[key]);
+                            canvas[canvasC, canvasR] = gameobjects[c, r];
+                        }
                     }
-                    else {
-                        // 已渲染
-                    }
-                }
-                // 移除
-                else {
-                    removeTiles(canvas[key]);
-                    canvas.Remove(key);
                 }
             }
         }
 
-        void renderTiles(string key, Vector3? [] data) {
-            canvas[key] = Globals.terrainSpawner.spawn(data);
-        }
+        public struct MAP_DATA {
+            public const int WIDTH = 10;
+            public const int HEIGHT = 10;
 
-        void removeTiles(GameObject [] bricks) {
-            foreach (GameObject brick in bricks) {
-                GameObject.DestroyObject(brick);
-            }
-        }
-    }
+            public Dictionary<string, Vector3?[,]> tiles;
 
-    public struct MAP_DATA {
-        public const float TILE_WIDTH = 10f;
-        public const float TILE_HEIGHT = 10f;
+            public static Vector3?[,] randomSpawn(int indexX, int indexY) {
+                Vector3?[,] tiles = new Vector3?[WIDTH, HEIGHT];
 
-        public Dictionary<string, Vector3? []> tiles;
-
-        public static Vector3?[] randomSpawn(float x, float y) {
-            Vector3?[] tiles = new Vector3?[(int)(TILE_WIDTH * TILE_HEIGHT)];
-
-            int index = 0;
-            float xStart = x * TILE_WIDTH;
-            float yStart = y * TILE_HEIGHT;
-            float xMax = xStart + TILE_WIDTH;
-            float yMax = yStart + TILE_HEIGHT;
-
-            for (x = xStart; x < xMax; x++) {
-                for (y = yStart; y < yMax; y++) {
-                    Boolean hasbrick = UnityEngine.Random.Range(0f, 1f) > 0.8f;
-                    if (hasbrick) {
-                        float height = Mathf.Floor(UnityEngine.Random.Range(1, 4));
-                        tiles[index] = new Vector3(x, height, y);
+                int x, y;
+                for (int c = 0; c < WIDTH; c++) {
+                    for (int r = 0; r < HEIGHT; r++) {
+                        Boolean hasbrick = UnityEngine.Random.Range(0f, 1f) > 0.8f;
+                        x = c + indexX * WIDTH;
+                        y = r + indexY * HEIGHT;
+                        if (hasbrick) {
+                            float height = Mathf.Floor(UnityEngine.Random.Range(1, 4));
+                            tiles[c, r] = new Vector3(x, height, y);
+                        }
+                        else {
+                            tiles[c, r] = new Vector3(x, 1, y);
+                        }
                     }
-                    else {
-                        tiles[index] = new Vector3(x, 1, y);
-                    }
-
-                    index++;
                 }
+                return tiles;
             }
-            return tiles;
         }
     }
 }

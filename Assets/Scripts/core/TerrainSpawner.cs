@@ -23,16 +23,21 @@ namespace Assets.Scripts.core {
         /*
         * 根据数据生成对应的地形 GameObject
         */
-        public GameObject[] spawn(Vector3?[] tileData) {
-            GameObject[] list = new GameObject[tileData.Length];
+        public GameObject[,] spawn(Vector3?[,] tileData) {
+            int column = tileData.GetLength(0);
+            int row = tileData.GetLength(1);
 
-            for (int index = 0; index < tileData.Length; index++) {
-                Vector3? pos = tileData[index];
-                if (pos.HasValue) {
-                    GameObject tile = GameObject.Instantiate(pos.Value.y == 1f ? floor : brick, stage, false) as GameObject;
-                    tile.transform.localScale = new Vector3(1f, pos.Value.y, 1f);
-                    tile.transform.position = new Vector3(tileData[index].Value.x, tileData[index].Value.y * 0.5f, tileData[index].Value.z);
-                    list[index] = tile;
+            GameObject[,] list = new GameObject[column, row];
+
+            for (int c = 0; c < column ; c++) {
+                for (int r = 0; r < row; r++) {
+                Vector3? pos = tileData[c, r];
+                    if (pos.HasValue) {
+                        GameObject tile = GameObject.Instantiate(pos.Value.y == 1f ? floor : brick, stage, false) as GameObject;
+                        tile.transform.localScale = new Vector3(1f, pos.Value.y, 1f);
+                        tile.transform.position = new Vector3(pos.Value.x, pos.Value.y * 0.5f, pos.Value.z);
+                        list[c, r] = tile;
+                    }
                 }
             }
 
